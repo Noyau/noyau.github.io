@@ -3,10 +3,41 @@
     <head>
         <meta charset="UTF-8"/>
         <title>Projet web #54687654313684126484323132131313213 v0.0.0.0.0.0.0.0.1</title>
+        <style>
+            html, body { margin: 0; padding: 0; }
+            .manBalek {
+                position: absolute; 
+                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; 
+                font-size: .8em;
+                font-style: italic;
+                color: rgb(200, 200, 200);
+            }
+            #onSEnFout1 { bottom: 10px; left:   10px; text-align: left;  }
+            #onSEnFout2 { bottom: 10px; right:  10px; text-align: right; }
+            #onSEnFout3 { top:    10px; right:  10px; text-align: right; }
+        </style>
+        <script type="text/javascript" src="js/sample-game/Core.js"></script>
+        <script type="text/javascript" src="js/sample-game/GUI.js"></script>
+        <script type="text/javascript" src="js/sample-game/Game.js"></script>
     </head>
-    <body>
-        <h1>Tant de 'Wow' !</h1>
-        <p>Je savais pas qu'on pouvait faire ça.</p>
-        <p>Hm...</p>
+    <body onload="Game.New(event);">
+        <canvas id="gameCanvas"></canvas>
+        <div id="onSEnFout1" class="manBalek">
+            Bon alors c'est un vieux truc hein.<br>
+            J'ai retrouvé ça quelque part dans un coin sombre de mon disque dur.<br>
+            Je me suis dis que c'est toujours mieux qu'une vielle page blanche, non ?
+        </div>
+        <div id="onSEnFout2" class="manBalek">
+            L'info en haut c'est pas d'origine.<br>
+            Disons que c'est une petite folie comme ça.<br>
+            <a style="color: #00aced; text-decoration: none;" href="https://twitter.com/_Noyau_">#Freestyle #Yolo</a>
+        </div>
+        <div id="onSEnFout3" class="manBalek">
+            J'ai mis une musique pour le /lol/.<br>
+            Elle tourne en boucle, c'est génial non ?<br>
+            <iframe width="128" height="72" src="https://www.youtube.com/embed/9n2xtSwGlD8?autoplay=1&amp;controls=0&amp;fs=0&amp;loop=1&amp;modestbranding=1&amp;rel=0&amp;showinfo=0&amp;start=0" frameborder="0" allowfullscreen></iframe><br>
+            On s'amuse comme des dingues non ?!<br><br><br>
+            <span style="color: rgb(44, 44, 44)">Je suis un professionnel. (ง ˙o˙)ว</span>
+        </div>
     </body>
 </html>

@@ -12,8 +12,10 @@ function Game()
     this.shoots     = [];
     this.corners    = [];
 
-    this.power      = { current: 20, min: 10, max: 50, };
+    this.power      = new Core.Structs.Gauge(20, 10, 50);
     this.powerBar   = null;
+
+    this.ammoBar    = null;
 }
 
 Game.current   = null;
@@ -103,7 +105,13 @@ Game.prototype = {
         );
 
         this.powerBar = new Game.UI.PowerBar(
-            this.canvas.width * .5 - 200, this.canvas.height - 30, 400, 20, "#ecf0f1", "#27ae60");
+            this.canvas.width * .5 - 200, this.canvas.height - 30, 400, 20, "#ecf0f1", "#27ae60",
+            "pawaaaa!!",
+        );
+        this.ammoBar  = new Game.UI.AmmoBar(
+            this.canvas.width * .5 - 200, this.canvas.height - 70, 400, 20, "#ecf0f1",
+            "boulettes",
+        );
     },
     update: function(delta) {
         if (Game.Keys.isDown(Game.Keys.ROT_LEFT))
@@ -112,12 +120,12 @@ Game.prototype = {
             this.player.rotateRight(Math.PI * delta);
         if (Game.Keys.isDown(Game.Keys.CLEAR))
             this.shoots.splice(0, this.shoots.length);
-        if (Game.Keys.isDown(Game.Keys.POW_UP) && this.power.current < this.power.max)
-            ++this.power.current;
-        if (Game.Keys.isDown(Game.Keys.POW_DOWN) && this.power.current > this.power.min)
-            --this.power.current;
+        if (Game.Keys.isDown(Game.Keys.POW_UP))
+            this.power.add(1);
+        if (Game.Keys.isDown(Game.Keys.POW_DOWN))
+            this.power.sub(1);
         if (Game.Keys.isDown(Game.Keys.SHOOT) && this.shoots.length < Game.maxShoots)
-            this.shoots.push(this.player.shoot(this.power.current));
+            this.shoots.push(this.player.shoot(this.power.value));
         
         var now = Date.now();
         for(var i = 0; i < this.shoots.length; ++i)
@@ -179,17 +187,19 @@ Game.prototype = {
         var rgbCommon = Game.Colors.frequence * this.frameCount + Math.PI * 0.33;
         for(var i = 0; i < this.shoots.length; ++i)
         {
-            var r = parseInt(Math.sin(rgbCommon + i * 0.15) * 127 + 128);
-            var g = parseInt(Math.sin(rgbCommon + i * 0.99) * 127 + 128);
-            var b = parseInt(Math.sin(rgbCommon + i * 0.75) * 127 + 128);
+            var r = parseInt(Math.sin(rgbCommon * .2 + i * 0.15) * 127 + 128);
+            var g = parseInt(Math.sin(rgbCommon * .3 + i * 0.99) * 127 + 128);
+            var b = parseInt(Math.sin(rgbCommon * .7 + i * 0.75) * 127 + 128);
             var color = "rgb("+r+","+g+","+b+")";
             this.shoots[i].render(this.context, color, color);
         }
         
         for(var i = 0; i < this.corners.length; ++i)
             this.corners[i].render(this.context, "grey", "grey");
-        0
-        this.powerBar.render(this.context, (this.power.current - this.power.min) / (this.power.max - this.power.min));
+        
+        this.powerBar.render(this.context, this.power.ratio());
+
+        this.ammoBar.render(this.context, 1. - this.shoots.length / Game.maxShoots, this.now * 1e-3);
 
         ++this.frameCount;
     },
@@ -213,34 +223,6 @@ Game.prototype = {
         setInterval(function() {
             t.run();
         }, 1);
-    },
-};
-
-Game.UI = {};
-Game.UI.PowerBar = function(x, y, width, height, background, foreground) {
-    this.x = x;
-    this.y = y;
-    this.width  = width  > 0 ? width  : 0;
-    this.height = height > 0 ? height : 0;
-    this.background = background;
-    this.foreground = foreground;
-};
-Game.UI.PowerBar.prototype = {
-    render: function(context, power) {
-        context.beginPath();
-        context.rect(this.x, this.y, this.width, this.height);
-        context.fillStyle = this.background;
-        context.fill();
-
-        var x = this.x + 2;
-        var y = this.y + 2;
-        var w = this.width  - 4;
-        var h = this.height - 4;
-
-        context.beginPath();
-        context.rect(x, y, w * power, h);
-        context.fillStyle = this.foreground;
-        context.fill();
     },
 };
 

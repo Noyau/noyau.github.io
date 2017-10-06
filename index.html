@@ -12,13 +12,17 @@
                 font-style: italic;
                 color: rgb(200, 200, 200);
             }
+            .suisUnPro  { color: rgb(44, 44, 44); }
             #onSEnFout1 { bottom: 10px; left:   10px; text-align: left;  }
             #onSEnFout2 { bottom: 10px; right:  10px; text-align: right; }
             #onSEnFout3 { top:    10px; right:  10px; text-align: right; }
+            #tutoNul    { top:    25%;  left:   10px; text-align: left;  border: 1px dotted red; padding: 10px 10px 20px 10px; }
         </style>
-        <script type="text/javascript" src="js/sample-game/Core.js"></script>
+        <script type="text/javascript" src="js/common/Core.js"></script>
         <script type="text/javascript" src="js/sample-game/GUI.js"></script>
         <script type="text/javascript" src="js/sample-game/Game.js"></script>
+        <script type="text/javascript" src="js/Ambient.js"></script>
+        <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>
     </head>
     <body onload="Game.New(event);">
         <canvas id="gameCanvas"></canvas>
@@ -35,11 +39,39 @@
         <div id="onSEnFout3" class="manBalek">
             J'ai mis une musique pour le /lol/.<br>
             Elle tourne en boucle, c'est génial non ?<br>
-            <iframe width="128" height="72" src="https://www.youtube.com/embed/9n2xtSwGlD8?autoplay=1&amp;controls=0&amp;fs=0&amp;loop=1&amp;modestbranding=1&amp;rel=0&amp;showinfo=0&amp;start=0" frameborder="0" allowfullscreen></iframe><br>
+            <div id="ambient" width="128" height="72"><br><b>♪ C'est l'emplacement de la playlist. Enfin, si tout se passe bien. ♪</b></div><br>
             On s'amuse comme des dingues non ?!<br><br>
             <b>ERRATUM: </b> ah non, on dirait que ça veut pas tourner en boucle... tant pis pour vous.<br>
             <br><br>
-            <span style="color: rgb(44, 44, 44)">Je suis un professionnel. (ง ˙o˙)ว</span>
+            <span class="suisUnPro">Je suis un professionnel. (ง ˙o˙)ว</span>
+        </div>
+        <div id="tutoNul" class="manBalek">
+            <h1>Le tutori<b>e</b>l nul</h1>
+            <p>
+                Finalement j'ai décidé de faire un truc <em>propre</em> pour afficher les commandes.<br>
+                Par contre, je laisse le machin en haut parce que.. ben ça fait un peu partie de l'identité du bousin maintenant.<br>
+                Et en plus, ça prend bien de la place sur le <em>jeu</em>. <span class="suisUnPro">Je suis un professionnel.</span>
+            </p>
+            <table>
+                <tr>
+                    <th>tirer</th><td>ESPACE</td>
+                </tr>
+                <tr>
+                    <th>tourner à gauche</th><td>A ou GAUCHE</td>
+                </tr>
+                <tr>
+                    <th>tourner à droite</th><td>E ou DROITE</td>
+                </tr>
+                <tr>
+                    <th>plus du PUISSANCE !</th><td>Z ou HAUT</td>
+                </tr>
+                <tr>
+                    <th>moins de puissance...</th><td>S ou BAS</td>
+                </tr>
+                <tr>
+                    <th>effacer</th><td>CTRL</td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>

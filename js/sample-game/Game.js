@@ -11,18 +11,24 @@ function Game()
     this.player     = null;
     this.shoots     = [];
     this.corners    = [];
+
+    this.power      = { current: 20, min: 10, max: 50, };
+    this.powerBar   = null;
 }
 
+Game.current   = null;
 Game.version   = "1.0";
 Game.name      = "SUPER Gravity Rainbow Shooter EX ULTRA IV"
 Game.maxFPS    = 60;
 Game.maxShoots = 512;
 
 Game.Keys = {
-    ROT_LEFT:  [ 65, 37], // A, LEFT  ARROW
-    ROT_RIGHT: [ 69, 39], // E, RIGHT ARROW
-    SHOOT:     [ 32 ],    // SPACE
-    CLEAR:     [ 17 ],    // CONTROL
+    ROT_LEFT:  [ 65, 37 ], // A, LEFT  ARROW
+    ROT_RIGHT: [ 69, 39 ], // E, RIGHT ARROW
+    POW_UP:    [ 90, 38 ], // Z, UP    ARROW
+    POW_DOWN:  [ 83, 40 ], // S, DOWN  ARROW
+    SHOOT:     [ 32 ],     // SPACE
+    CLEAR:     [ 17 ],     // CONTROL
 };
 
 Game.KeysInternal = { 
@@ -86,7 +92,7 @@ Game.prototype = {
         this.player = new Game.Entity(w/2, h/2, 16);
         
         var _w = w * 0.25;
-        var _h = h * 0.25;
+        var _h = h * 0.20;
         var _x = w - _w;
         var _y = h - _h;
         this.corners.push(
@@ -95,16 +101,23 @@ Game.prototype = {
             new Game.Entity(_x,_y, 64),
             new Game.Entity(_w,_y, 32),
         );
+
+        this.powerBar = new Game.UI.PowerBar(
+            this.canvas.width * .5 - 200, this.canvas.height - 30, 400, 20, "#ecf0f1", "#27ae60");
     },
     update: function(delta) {
         if (Game.Keys.isDown(Game.Keys.ROT_LEFT))
-            this.player.rotateLeft();
+            this.player.rotateLeft(Math.PI  * delta);
         if (Game.Keys.isDown(Game.Keys.ROT_RIGHT))
-            this.player.rotateRight();
+            this.player.rotateRight(Math.PI * delta);
         if (Game.Keys.isDown(Game.Keys.CLEAR))
             this.shoots.splice(0, this.shoots.length);
+        if (Game.Keys.isDown(Game.Keys.POW_UP) && this.power.current < this.power.max)
+            ++this.power.current;
+        if (Game.Keys.isDown(Game.Keys.POW_DOWN) && this.power.current > this.power.min)
+            --this.power.current;
         if (Game.Keys.isDown(Game.Keys.SHOOT) && this.shoots.length < Game.maxShoots)
-            this.shoots.push(this.player.shoot());
+            this.shoots.push(this.player.shoot(this.power.current));
         
         var now = Date.now();
         for(var i = 0; i < this.shoots.length; ++i)
@@ -175,7 +188,9 @@ Game.prototype = {
         
         for(var i = 0; i < this.corners.length; ++i)
             this.corners[i].render(this.context, "grey", "grey");
-        
+        0
+        this.powerBar.render(this.context, (this.power.current - this.power.min) / (this.power.max - this.power.min));
+
         ++this.frameCount;
     },
     run: function() {
@@ -201,6 +216,34 @@ Game.prototype = {
     },
 };
 
+Game.UI = {};
+Game.UI.PowerBar = function(x, y, width, height, background, foreground) {
+    this.x = x;
+    this.y = y;
+    this.width  = width  > 0 ? width  : 0;
+    this.height = height > 0 ? height : 0;
+    this.background = background;
+    this.foreground = foreground;
+};
+Game.UI.PowerBar.prototype = {
+    render: function(context, power) {
+        context.beginPath();
+        context.rect(this.x, this.y, this.width, this.height);
+        context.fillStyle = this.background;
+        context.fill();
+
+        var x = this.x + 2;
+        var y = this.y + 2;
+        var w = this.width  - 4;
+        var h = this.height - 4;
+
+        context.beginPath();
+        context.rect(x, y, w * power, h);
+        context.fillStyle = this.foreground;
+        context.fill();
+    },
+};
+
 Game.Entity = function(x = 0, y = 0, r = 16, vx = 0, vy = 0, t = 0) {
     this.position = new Core.Math.Vector(x, y);
     this.velocity = new Core.Math.Vector(vx, vy);
@@ -218,9 +261,9 @@ Game.Entity.prototype = {
     rotateRight: function(step = Core.Math.PI_36) {
         this.theta += step;
     },
-    shoot: function() {
-        var vx = this.radius * Math.cos(this.theta);
-        var vy = this.radius * Math.sin(this.theta);
+    shoot: function(power) {
+        var vx = (this.radius + power) * Math.cos(this.theta);
+        var vy = (this.radius + power) * Math.sin(this.theta);
         var x = this.position.x + vx;
         var y = this.position.y + vy;
         return new Game.Entity(x, y, this.radius * 0.15, vx, vy, this.theta);
@@ -243,6 +286,8 @@ Game.Entity.prototype = {
 };
 
 Game.New = function(event) {
-    if(Core.SafeStart(event))
-        new Game().start();
+    if(Core.SafeStart(event)) {
+        Game.current = new Game();
+        Game.current.start();
+    }
 };

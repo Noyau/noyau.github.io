@@ -9,6 +9,13 @@ Ambient.url     = "https://www.youtube.com/embed/videoseries?list=PL5gu-IlPASade
 
 Ambient.prototype = {
     load: function(url) {
+        var placeholder = document.getElementById('ambient');
+
+        if(placeholder !== null) {
+            this.width  = placeholder.width;
+            this.height = placeholder.height;
+        }
+
         this.player = new YT.Player('ambient', {
             width:  this.width,
             height: this.height,
@@ -24,12 +31,20 @@ Ambient.prototype = {
             },
             events: {
                 'onReady':  this.onPlayerReady,
+                'onError':  this.onPlayerError,
             },
         })
     },
     onPlayerReady: function(e) {
+        var count = e.target.getPlaylist().length;
+        var index = Core.Math.random(0, count);
+        e.target.playVideoAt(index);
         e.target.setShuffle(true);
-        e.target.playVideo();
+    },
+    onPlayerError: function(e) {
+        console.log(e);
+        console.log("Failed to load video %s", e.target.getVideoUrl());
+        setTimeout(function() { e.target.nextVideo(); }, 1000);
     },
 };
 

@@ -5,6 +5,8 @@ function Game()
     
     this.frameCount = 0;
     
+    this.deltaTime  = 0;
+
     this.canvas     = null;
     this.context    = null;
     
@@ -16,6 +18,8 @@ function Game()
     this.powerBar   = null;
 
     this.ammoBar    = null;
+
+    this.mouse      = null;
 }
 
 Game.current   = null;
@@ -112,12 +116,17 @@ Game.prototype = {
             this.canvas.width * .5 - 200, this.canvas.height - 70, 400, 20, "#ecf0f1",
             "boulettes",
         );
+
+        this.mouse = new Game.Mouse();
+        this.mouse.observers = this.corners.concat(this.player);
     },
-    update: function(delta) {
+    update: function(deltaTime) {
+        this.deltaTime = deltaTime;
+
         if (Game.Keys.isDown(Game.Keys.ROT_LEFT))
-            this.player.rotateLeft(Math.PI  * delta);
+            this.player.rotateLeft(Math.PI  * deltaTime);
         if (Game.Keys.isDown(Game.Keys.ROT_RIGHT))
-            this.player.rotateRight(Math.PI * delta);
+            this.player.rotateRight(Math.PI * deltaTime);
         if (Game.Keys.isDown(Game.Keys.CLEAR))
             this.shoots.splice(0, this.shoots.length);
         if (Game.Keys.isDown(Game.Keys.POW_UP))
@@ -224,47 +233,6 @@ Game.prototype = {
             t.run();
         }, 1);
     },
-};
-
-Game.Entity = function(x = 0, y = 0, r = 16, vx = 0, vy = 0, t = 0) {
-    this.position = new Core.Math.Vector(x, y);
-    this.velocity = new Core.Math.Vector(vx, vy);
-    this.radius   = r;
-    this.theta    = t;
-    this.birth    = Date.now();
-};
-
-Game.Entity.maxLife = 360000000; 
-
-Game.Entity.prototype = {
-    rotateLeft: function(step = Core.Math.PI_36) {
-        this.theta -= step;
-    },
-    rotateRight: function(step = Core.Math.PI_36) {
-        this.theta += step;
-    },
-    shoot: function(power) {
-        var vx = (this.radius + power) * Math.cos(this.theta);
-        var vy = (this.radius + power) * Math.sin(this.theta);
-        var x = this.position.x + vx;
-        var y = this.position.y + vy;
-        return new Game.Entity(x, y, this.radius * 0.15, vx, vy, this.theta);
-    },
-    render: function(context, c1 = "orange", c2 = "black") {
-        context.beginPath();
-        context.arc(this.position.x, this.position.y, this.radius, Core.Math.PI2, false);
-        context.fillStyle = c1;
-        context.fill();
-        
-        var rx = this.position.x + this.radius * Math.cos(this.theta);
-        var ry = this.position.y + this.radius * Math.sin(this.theta);
-        
-        context.beginPath();
-        context.moveTo(this.position.x, this.position.y);
-        context.lineTo(rx, ry);
-        context.strokeStyle = c2;
-        context.stroke();
-    }
 };
 
 Game.New = function(event) {
